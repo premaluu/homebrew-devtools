@@ -26,7 +26,7 @@ module Homebrew
       "brew",
       "bundle",
       "--file=#{brewfile}",
-    ) || raise("❌ brew bundle failed")
+    ) || raise("brew bundle failed")
 
     setup_zshrc
     setup_python
@@ -36,13 +36,13 @@ module Homebrew
     puts "✅ Dev setup completed. Restart your terminal."
   end
 
-  # ---------- helpers ----------
+  # ---------------- helpers ----------------
 
   def ask(prompt, default)
     print "#{prompt} [#{default}]: "
     input = $stdin.gets&.strip
 
-    (input.blank? ? default : input)
+    input.presence || default
   end
 
   def yes?(prompt, default: true)
@@ -55,7 +55,7 @@ module Homebrew
     %w[y yes].include?(input)
   end
 
-  # ---------- setup steps ----------
+  # ---------------- setup steps ----------------
 
   def setup_zshrc
     zshrc = File.join(Dir.home, ".zshrc")
@@ -63,9 +63,9 @@ module Homebrew
 
     return if File.read(zshrc).include?(">>> brew-dev setup >>>")
 
-    File.open(zshrc, "a") do |f|
-      f.puts
-      f.puts ZSHRC_BLOCK
+    File.open(zshrc, "a") do |file|
+      file.puts
+      file.puts ZSHRC_BLOCK
     end
 
     puts "🧩 ~/.zshrc updated"
@@ -97,9 +97,10 @@ module Homebrew
     nvm_script = "/opt/homebrew/opt/nvm/nvm.sh"
     return unless File.exist?(nvm_script)
 
-    system %Q(
-      bash -c 'source #{nvm_script} && nvm install --lts && nvm use --lts'
+    system(
+      "bash",
+      "-c",
+      "source #{nvm_script} && nvm install --lts && nvm use --lts",
     )
   end
 end
-
