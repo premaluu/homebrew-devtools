@@ -1,6 +1,6 @@
-# 🍺 Homebrew Dev Tools (`brew dev`)
+# 🍺 Homebrew Dev Tools (`brew setup`)
 
-A **personal Homebrew tap** that provides a native `brew dev` command to **bootstrap a full development environment** on macOS using **pyenv, jenv, and nvm**, with interactive version selection.
+A **personal Homebrew tap** that provides a native `brew setup` command to **bootstrap a full development environment** on macOS using **pyenv, jenv, and nvm**, with interactive version selection.
 
 This setup is:
 - 🚀 One-command driven
@@ -12,7 +12,7 @@ This setup is:
 
 ## ✨ Features
 
-- Native Homebrew command: `brew dev`
+- Native Homebrew command: `brew setup`
 - Installs tools via a versioned `Brewfile`
 - Language version management using:
   - **pyenv** (Python)
@@ -41,7 +41,7 @@ This setup is:
 ---
 # 🍎 Fresh macOS Setup Guide (Apple Silicon)
 
-Follow these steps on a **brand new Mac** to bootstrap your full development environment using Homebrew and `brew dev`.
+Follow these steps on a **brand new Mac** to bootstrap your full development environment using Homebrew and `brew setup`.
 
 ---
 
@@ -75,7 +75,7 @@ brew tap premaluu/devtools
 
 ## 6️⃣ Run the Development Environment Setup
 ```bash
-brew dev
+brew setup
 ```
 This command will:
 
