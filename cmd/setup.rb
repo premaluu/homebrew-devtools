@@ -16,7 +16,7 @@ module Homebrew
     # <<< brew-dev setup <<<
   ZSH
 
-  def dev
+  def setup
     puts "🍺 Bootstrapping dev environment..."
 
     #brewfile = File.expand_path("../Brewfile", __dir__)
