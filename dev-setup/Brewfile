@@ -1,5 +1,5 @@
 # -------- Core tools --------
-brew "git"
+# brew "git" using xcode installation
 brew "curl"
 brew "wget"
 brew "jq"
