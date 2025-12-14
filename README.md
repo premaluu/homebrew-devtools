@@ -86,3 +86,8 @@ This command will:
 
 ## 7️⃣ Restart Your Terminal
 Close and reopen your terminal after the first run so all environment changes take effect.
+---
+
+## 📷 Screenshots
+<img width="794" height="465" alt="Screenshot 2025-12-14 at 7 28 32 PM" src="https://github.com/user-attachments/assets/6a36aa49-a1c7-4a40-8e97-1820327e7da5" />
+
