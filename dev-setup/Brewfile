@@ -1,0 +1,30 @@
+# -------- Core tools --------
+brew "git"
+brew "curl"
+brew "wget"
+brew "jq"
+brew "tree"
+
+# -------- Version managers --------
+brew "pyenv"
+brew "jenv"
+brew "nvm"
+
+# -------- Java distributions (for jenv) --------
+brew "openjdk@17"
+brew "openjdk@21"
+
+# -------- Dev tools --------
+brew "docker"
+brew "kubectl"
+brew "terraform"
+
+# # -------- CLI UX --------
+# brew "fzf"
+# brew "ripgrep"
+# brew "bat"
+# brew "eza"
+
+# -------- Casks --------
+cask "iterm2"
+cask "visual-studio-code"
