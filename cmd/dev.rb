@@ -19,7 +19,8 @@ module Homebrew
   def dev
     puts "🍺 Bootstrapping dev environment..."
 
-    brewfile = File.expand_path("../Brewfile", __dir__)
+    #brewfile = File.expand_path("../Brewfile", __dir__)
+    brewfile = File.expand_path("../dev-setup/Brewfile", __dir__)
     raise "Brewfile not found" unless File.exist?(brewfile)
 
     system(
