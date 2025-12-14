@@ -15,9 +15,9 @@ brew "openjdk@17"
 brew "openjdk@21"
 
 # -------- Dev tools --------
-brew "docker"
-brew "kubectl"
-brew "terraform"
+# brew "docker"
+# brew "kubectl"
+# brew "terraform"
 
 # # -------- CLI UX --------
 # brew "fzf"
@@ -28,3 +28,4 @@ brew "terraform"
 # -------- Casks --------
 cask "iterm2"
 cask "visual-studio-code"
+cask "warp"
