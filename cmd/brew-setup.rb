@@ -32,6 +32,7 @@ def setup
   setup_python
   setup_java
   setup_node
+  setup_git
 
   puts "✅ Dev setup completed. Restart your terminal."
 end
@@ -101,6 +102,52 @@ def setup_node
     "-c",
     "source #{nvm_script} && nvm install --lts && nvm use --lts",
   )
+end
+
+def setup_git
+  puts "\n🔧 Git Configuration"
+
+  current_name = `git config --global user.name`.strip
+  current_email = `git config --global user.email`.strip
+
+  if current_name.empty? || current_email.empty?
+    puts "Let's configure your Git identity."
+    name = ask("Git Config Name", "Your Name")
+    email = ask("Git Config Email", "you@example.com")
+
+    system("git", "config", "--global", "user.name", name)
+    system("git", "config", "--global", "user.email", email)
+  else
+    puts "✅ Git identity already configured (#{current_name} <#{current_email}>)"
+  end
+
+  setup_ssh
+end
+
+def setup_ssh
+  ssh_key_path = File.join(Dir.home, ".ssh", "id_ed25519")
+
+  if File.exist?(ssh_key_path)
+    puts "✅ SSH key found at #{ssh_key_path}"
+  else
+    puts "\n🔑 SSH Key"
+    if yes?("Generate a new SSH key for GitHub?", default: true)
+      email = `git config --global user.email`.strip
+      system("ssh-keygen", "-t", "ed25519", "-C", email, "-f", ssh_key_path, "-N", "")
+      system("ssh-add --apple-use-keychain #{ssh_key_path} 2>/dev/null")
+      puts "✅ SSH key generated."
+    end
+  end
+
+  return unless File.exist?(ssh_key_path)
+
+  puts "\n📋 Here is your public SSH key (copy to GitHub):"
+  system("pbcopy < #{ssh_key_path}.pub")
+  puts "---------------------------------------------------"
+  puts File.read("#{ssh_key_path}.pub")
+  puts "---------------------------------------------------"
+  puts "🔗 Add it here: https://github.com/settings/keys"
+  puts "(Copied to clipboard 📋)"
 end
 
 setup

@@ -19,6 +19,7 @@ This setup is:
   - **jenv** (Java)
   - **nvm** (Node.js)
 - Interactive prompts for choosing language versions
+- Interactive Git configuration (User/Email/SSH)
 - Safe, idempotent `.zshrc` configuration
 - Apple Silicon compatible
 - Fully passes `brew style` and `brew audit`
@@ -82,6 +83,7 @@ This command will:
 - Install all tools defined in the Brewfile
 - Configure pyenv, jenv, and nvm
 - Prompt you to select language versions interactively
+- Configure Git identity and generate SSH keys
 - Safely update your .zshrc
 
 ## 7️⃣ Restart Your Terminal
