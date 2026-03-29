@@ -23,6 +23,7 @@ This setup is:
 - Safe, idempotent `.zshrc` configuration
 - Apple Silicon compatible
 - Fully passes `brew style` and `brew audit`
+- **Dry run mode**: Preview changes with `brew setup --dry-run`
 
 ---
 

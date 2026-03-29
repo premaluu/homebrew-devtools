@@ -17,7 +17,13 @@ ZSHRC_BLOCK = <<~ZSH
   # <<< brew-dev setup <<<
 ZSH
 
+DRY_RUN = ARGV.include?("--dry-run")
+
 def setup
+  if DRY_RUN
+    puts "🔍 Dry run mode - no changes will be made\n\n"
+  end
+
   puts "🍺 Bootstrapping dev environment..."
 
   tap_repo = `brew --repo premaluu/devtools`.strip
@@ -25,8 +31,18 @@ def setup
 
   abort("❌ Brewfile not found at #{brewfile}") unless File.exist?(brewfile)
 
-  system("brew", "bundle", "--file=#{brewfile}") ||
-    abort("❌ brew bundle failed")
+  if DRY_RUN
+    puts "📦 Would run: brew bundle --file=#{brewfile}"
+    puts "   Packages to install:"
+    File.read(brewfile).each_line do |line|
+      next if line.strip.empty? || line.start_with?("#")
+      puts "     - #{line.strip}"
+    end
+    puts
+  else
+    system("brew", "bundle", "--file=#{brewfile}") ||
+      abort("❌ brew bundle failed")
+  end
 
   setup_zshrc
   setup_python
@@ -34,14 +50,18 @@ def setup
   setup_node
   setup_git
 
-  puts "✅ Dev setup completed. Restart your terminal."
+  if DRY_RUN
+    puts "✅ Dry run completed. No changes were made."
+  else
+    puts "✅ Dev setup completed. Restart your terminal."
+  end
 end
 
 def ask(prompt, default)
   print "#{prompt} [#{default}]: "
   input = $stdin.gets&.strip
 
-  return default if input.blank?
+  return default if input.nil? || input.empty?
 
   input
 end
@@ -51,7 +71,7 @@ def yes?(prompt, default: true)
   print "#{prompt} #{suffix}: "
   input = $stdin.gets&.strip&.downcase
 
-  return default if input.blank?
+  return default if input.nil? || input.empty?
 
   %w[y yes].include?(input)
 end
@@ -62,19 +82,27 @@ def setup_zshrc
 
   return if File.read(zshrc).include?(">>> brew-dev setup >>>")
 
-  File.open(zshrc, "a") do |f|
-    f.puts
-    f.puts ZSHRC_BLOCK
+  if DRY_RUN
+    puts "🧩 Would update ~/.zshrc with pyenv/jenv/nvm initialization"
+  else
+    File.open(zshrc, "a") do |f|
+      f.puts
+      f.puts ZSHRC_BLOCK
+    end
+    puts "🧩 ~/.zshrc updated"
   end
-
-  puts "🧩 ~/.zshrc updated"
 end
 
 def setup_python
   puts "\n🐍 Python"
   version = ask("Python version", "3.12.4")
-  system "pyenv", "install", "-s", version
-  system "pyenv", "global", version
+  if DRY_RUN
+    puts "   Would install Python #{version} via pyenv"
+    puts "   Would set Python #{version} as global"
+  else
+    system "pyenv", "install", "-s", version
+    system "pyenv", "global", version
+  end
 end
 
 def setup_java
@@ -82,16 +110,35 @@ def setup_java
   version = ask("Java version (17 or 21)", "21")
   jdk_path = "/opt/homebrew/opt/openjdk@#{version}"
 
-  return unless Dir.exist?(jdk_path)
+  unless Dir.exist?(jdk_path)
+    puts "   ⚠️  JDK #{version} not found at #{jdk_path}"
+    return
+  end
 
-  system "jenv", "add", jdk_path
-  system "jenv", "global", version
+  if DRY_RUN
+    puts "   Would add JDK #{version} to jenv"
+    puts "   Would set Java #{version} as global"
+  else
+    system "jenv", "add", jdk_path
+    system "jenv", "global", version
+  end
 end
 
 def setup_node
   puts "\n🟢 Node.js"
 
-  return unless yes?("Install Node.js LTS?")
+  install_lts = yes?("Install Node.js LTS?")
+
+  if DRY_RUN
+    if install_lts
+      puts "   Would install Node.js LTS via nvm"
+    else
+      puts "   Skipping Node.js installation"
+    end
+    return
+  end
+
+  return unless install_lts
 
   nvm_script = "/opt/homebrew/opt/nvm/nvm.sh"
 
@@ -115,8 +162,13 @@ def setup_git
     name = ask("Git Config Name", "Your Name")
     email = ask("Git Config Email", "you@example.com")
 
-    system("git", "config", "--global", "user.name", name)
-    system("git", "config", "--global", "user.email", email)
+    if DRY_RUN
+      puts "   Would set Git user.name to: #{name}"
+      puts "   Would set Git user.email to: #{email}"
+    else
+      system("git", "config", "--global", "user.name", name)
+      system("git", "config", "--global", "user.email", email)
+    end
   else
     puts "✅ Git identity already configured (#{current_name} <#{current_email}>)"
   end
@@ -131,12 +183,25 @@ def setup_ssh
     puts "✅ SSH key found at #{ssh_key_path}"
   else
     puts "\n🔑 SSH Key"
-    if yes?("Generate a new SSH key for GitHub?", default: true)
-      email = `git config --global user.email`.strip
-      system("ssh-keygen", "-t", "ed25519", "-C", email, "-f", ssh_key_path, "-N", "")
-      system("ssh-add --apple-use-keychain #{ssh_key_path} 2>/dev/null")
-      puts "✅ SSH key generated."
+    generate_key = yes?("Generate a new SSH key for GitHub?", default: true)
+
+    if DRY_RUN
+      if generate_key
+        puts "   Would generate SSH key at #{ssh_key_path}"
+        puts "   Would add key to keychain"
+        puts "   Would display public key for GitHub"
+      else
+        puts "   Skipping SSH key generation"
+      end
+      return
     end
+
+    return unless generate_key
+
+    email = `git config --global user.email`.strip
+    system("ssh-keygen", "-t", "ed25519", "-C", email, "-f", ssh_key_path, "-N", "")
+    system("ssh-add --apple-use-keychain #{ssh_key_path} 2>/dev/null")
+    puts "✅ SSH key generated."
   end
 
   return unless File.exist?(ssh_key_path)
